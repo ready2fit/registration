@@ -781,23 +781,62 @@
         // Form submission
         document.getElementById('registrationForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            
+
             if (validateForm()) {
                 // Show loading
                 document.getElementById('loading').style.display = 'block';
                 document.querySelector('.submit-btn').style.display = 'none';
-                
-                // Simulate form submission
-                setTimeout(() => {
-                    document.getElementById('loading').style.display = 'none';
-                    document.getElementById('successMessage').style.display = 'block';
-                    document.getElementById('registrationForm').style.display = 'none';
-                    
-                    // Scroll to success message
-                    document.getElementById('successMessage').scrollIntoView({ 
-                        behavior: 'smooth' 
+
+                // Collect form data
+                const formData = {
+                    name: document.getElementById('name').value.trim(),
+                    dob: document.getElementById('dob').value,
+                    age: parseInt(document.getElementById('age').value),
+                    date_of_joining: document.getElementById('date_of_joining').value,
+                    height: parseInt(document.getElementById('height').value),
+                    weight: parseInt(document.getElementById('weight').value),
+                    occupation: document.getElementById('occupation').value.trim(),
+                    address: document.getElementById('address').value.trim(),
+                    email: document.getElementById('email').value.trim(),
+                    phone: document.getElementById('phone').value.trim(),
+                    alternate_phone: document.querySelectorAll('input[name="phone"]')[1]?.value.trim() || "",
+                    looking_for: document.querySelector('input[name="looking_for"]:checked')?.value || "",
+                    membership_mode: document.querySelector('input[name="membership_mode"]:checked')?.value || "",
+                    end_of_membership: document.getElementById('end_of_membership').value,
+                    physical_problems: document.querySelector('input[name="physical_problems"]:checked')?.value || "",
+                    physicalDescription: document.getElementById('physicalDescription').value.trim() || null,
+                    fractures: document.querySelector('input[name="fractures"]:checked')?.value || "",
+                    fractureDescription: document.getElementById('fractureDescription').value.trim() || null,
+                    agreed_to_terms: document.getElementById('terms').checked,
+                    submitted_at: new Date().toISOString()
+                };
+
+                // Prepare fetch options
+                const requestOptions = {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(formData),
+                    redirect: "follow"
+                };
+
+                // Send data to backend
+                fetch("http://localhost:5000/members", requestOptions)
+                    .then((response) => response.text())
+                    .then((result) => {
+                        document.getElementById('loading').style.display = 'none';
+                        document.getElementById('successMessage').style.display = 'block';
+                        document.getElementById('registrationForm').style.display = 'none';
+                        document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth' });
+                        console.log(result);
+                    })
+                    .catch((error) => {
+                        document.getElementById('loading').style.display = 'none';
+                        document.querySelector('.submit-btn').style.display = 'block';
+                        alert("There was an error submitting your registration. Please try again.");
+                        console.error(error);
                     });
-                }, 2000);
             } else {
                 // Scroll to first error
                 const firstError = document.querySelector('.error[style*="block"]');
