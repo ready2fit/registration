@@ -822,7 +822,7 @@
                 };
 
                 // Send data to backend
-                fetch("http://localhost:5000/members", requestOptions)
+                fetch("https://registration-backend-pfjf.onrender.com/members", requestOptions)
                     .then((response) => response.text())
                     .then((result) => {
                         document.getElementById('loading').style.display = 'none';
